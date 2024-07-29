@@ -1,6 +1,6 @@
 // There is no power no might except from ALLAH
 const vscode = require('vscode');
-const MyViewProvider = require('./my-view');
+const MyViewProvider = require('./data.service');
 
 /**
  * @param {vscode.ExtensionContext} context
