@@ -1,0 +1,72 @@
+{
+  "name": "prayers-timings",
+  "displayName": "Prayers Timings",
+  "description": "Prayer Timing Alerts",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand: prayer-timings.refresh",
+    "onCommand: prayer-timings.settings"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "prayer-timings.refresh",
+        "title": "Load",
+        "icon": {
+          "light": "images/light/refresh.svg",
+          "dark": "images/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "prayer-timings.settings",
+        "title": "Settings"
+      },
+      {
+        "command": "prayer-timings.autoUpdate",
+        "title": "Refresh"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "prayer-timings",
+          "title": "Prayer Timings",
+          "icon": "images/masjid.png"
+        }
+      ]
+    },
+    "views": {
+      "prayer-timings": [
+        {
+          "id": "myView",
+          "name": ""
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.91.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "moment": "^2.30.1"
+  }
+}
