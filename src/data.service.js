@@ -93,10 +93,16 @@ class MyViewProvider {
         const t1 = this.parseTime(`${hour}:${minute}`);
         const t2 = this.parseTime(time);
 
-        if (t1.hours >= t2.hours) {
-            return true;
+        if (t1.hours > t2.hours) {
+            return true
         } else if (t1.hours < t2.hours) {
             return false;
+        } else {
+            if (t1.minutes > t2.minutes) {
+                return true
+            } else {
+                return false
+            }
         }
     }
 
