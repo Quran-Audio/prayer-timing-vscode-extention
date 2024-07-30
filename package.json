@@ -3,7 +3,8 @@
   "displayName": "Prayer Timing",
   "description": "Prayer Timing Alerts",
   "publisher": "MohammedShafeer",
-  "version": "1.0.1",
+  "icon": "images/masjid-icon.png",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.91.0"
   },
