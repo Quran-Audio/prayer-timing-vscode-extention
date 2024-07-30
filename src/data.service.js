@@ -71,7 +71,7 @@ class MyViewProvider {
             for (const key in timings) {
                 hourAndMin = timings[key].split(' ')
                 if (this.inNowGreaterThan(hourAndMin?.[0]) === false) {
-                    return `[${key}  ${timings[key]}]`
+                    return `[Next:  ${key} ${timings[key]}]`
                 }
             }
         } catch (error) {
