@@ -7,7 +7,8 @@ const MyViewProvider = require('./data.service');
  */
 function activate(context) {
 	const myViewProvider = new MyViewProvider(context);
-	vscode.window.registerTreeDataProvider('myView', myViewProvider);
+	vscode.window.registerTreeDataProvider('prayerTimingsView', myViewProvider);
+	// vscode.window.registerTreeDataProvider('sunnahPrayer', myViewProvider);
 
 	let refreshCommand = vscode.commands.registerCommand('prayer-timings.refresh', async () => {
 		myViewProvider.refresh();

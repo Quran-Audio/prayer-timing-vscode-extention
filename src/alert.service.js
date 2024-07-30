@@ -4,7 +4,7 @@ const calculateTimeUntil = (hour, minute) => {
     try {
         const now = new Date();
         let nextSix = new Date();
-        nextSix.setHours(hour, minute, 0, 0); 
+        nextSix.setHours(hour, minute, 0, 0);
 
         if (now.getTime() > nextSix.getTime()) {
             // If it's already past skip
@@ -12,7 +12,7 @@ const calculateTimeUntil = (hour, minute) => {
         }
 
         return nextSix.getTime() - now.getTime(); // Time in milliseconds
-    } catch (error) {}
+    } catch (error) { }
     return -1
 };
 

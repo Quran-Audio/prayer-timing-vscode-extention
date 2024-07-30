@@ -1,8 +1,8 @@
 const vscode = require('vscode');
 const axios = require('axios')
 const moment = require('moment');
-const {getConfigValue,setConfigValue} = require('./config.service')
-const {scheduleAlertAt} = require('./alert.service')
+const { getConfigValue, setConfigValue } = require('./config.service')
+const { scheduleAlertAt } = require('./alert.service')
 
 class MyViewProvider {
     constructor(context) {
@@ -26,23 +26,29 @@ class MyViewProvider {
     }
 
     async getRootElements() {
-        await this.getPraryerTimings()
-        const todayTimimg = this.getTodaysTiming()
-        if (todayTimimg) {
-            const { timings: prayerInfo } = todayTimimg
-            scheduleAlertAt('Fajr',prayerInfo['Fajr'])
-            scheduleAlertAt('Dhuhr','8:33 ')
-            scheduleAlertAt('Asr',prayerInfo['Asr'])
-            scheduleAlertAt('Maghrib',prayerInfo['Maghrib'])
-            scheduleAlertAt('Isha',prayerInfo['Isha'])
+        try {
+            await this.getPraryerTimings()
+            const todayTimimg = this.getTodaysTiming()
+            if (todayTimimg) {
+                const { timings: prayerInfo, meta } = todayTimimg
+                scheduleAlertAt('Fajr', prayerInfo['Fajr'])
+                scheduleAlertAt('Dhuhr', '8:33 ')
+                scheduleAlertAt('Asr', prayerInfo['Asr'])
+                scheduleAlertAt('Maghrib', prayerInfo['Maghrib'])
+                scheduleAlertAt('Isha', prayerInfo['Isha'])
 
-            return [
-                new MyTreeItem(`🕑 Fajr [${prayerInfo['Fajr']}]`, []),
-                new MyTreeItem(`🕑 Dhuhr [${prayerInfo['Dhuhr']}]`, []),
-                new MyTreeItem(`🕑 Asr [${prayerInfo['Asr']}]`, []),
-                new MyTreeItem(`🕑 Maghrib [${prayerInfo['Maghrib']}]`, []),
-                new MyTreeItem(`🕑 Isha [${prayerInfo['Isha']}]`, [])
-            ]
+                return [
+                    new MyTreeItem(`📍 Timezone [${meta.timezone}]`, [
+                        new MyTreeItem(`🕑 Fajr [${prayerInfo['Fajr']}]`, []),
+                        new MyTreeItem(`🕑 Dhuhr [${prayerInfo['Dhuhr']}]`, []),
+                        new MyTreeItem(`🕑 Asr [${prayerInfo['Asr']}]`, []),
+                        new MyTreeItem(`🕑 Maghrib [${prayerInfo['Maghrib']}]`, []),
+                        new MyTreeItem(`🕑 Isha [${prayerInfo['Isha']}]`, [])
+                    ], vscode.TreeItemCollapsibleState.Expanded),
+                ]
+            }
+        } catch (error) {
+            vscode.window.showInformationMessage(error.message);
         }
     }
 
@@ -59,11 +65,11 @@ class MyViewProvider {
 
     async getNextPrayerAlert() {
         try {
-            const timings = JSON.parse(await this.context.globalState.get('todayPraryerTimings', {}))
+            const { timings } = this.getTodaysTiming()
             let hourAndMin = []
 
             for (const key in timings) {
-                hourAndMin = timings[key]?.split(' ')
+                hourAndMin = timings[key].split(' ')
                 if (this.inNowGreaterThan(hourAndMin?.[0]) === false) {
                     return `[${key}  ${timings[key]}]`
                 }
@@ -98,28 +104,29 @@ class MyViewProvider {
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
-        const formattedDate = moment().format('DD MMM YYYY');
+
         let shouldFetchData = false
 
         let latitude = getConfigValue('latitude')
-        if (!latitude) {
-            latitude = await vscode.window.showInputBox({
-                placeHolder: 'Enter Latitude'
-            })
+        if (this.context.globalState.get('latitudePT', null) !== latitude) {
+            this.context.globalState.update('latitudePT', latitude)
+            // latitude = await vscode.window.showInputBox({
+            //     placeHolder: 'Enter Latitude'
+            // })
             if (latitude) {
-                setConfigValue('latitude',latitude)
+                setConfigValue('latitude', latitude)
                 shouldFetchData = true
             }
         }
 
-
         let longitude = getConfigValue('longitude')
-        if (!longitude) {
-            longitude = await vscode.window.showInputBox({
-                placeHolder: 'Enter Longitude'
-            })
+        if (this.context.globalState.get('longitudePT', null) !== longitude) {
+            this.context.globalState.update('longitudePT', longitude)
+            // longitude = await vscode.window.showInputBox({
+            //     placeHolder: 'Enter Longitude'
+            // })
             if (longitude) {
-                setConfigValue('longitude',longitude)
+                setConfigValue('longitude', longitude)
                 shouldFetchData = true
             }
         }
@@ -161,14 +168,16 @@ class MyViewProvider {
             await this.context.globalState.update('monthPraryerTimings', JSON.stringify(monthPrayerTimings));
         } catch (error) {
             console.log(error.message);
+            await this.context.globalState.update('monthPraryerTimings', JSON.stringify([]));
         }
     }
 }
 
 class MyTreeItem extends vscode.TreeItem {
-    constructor(label, children = []) {
+    constructor(label, children = [], collapsibleState = vscode.TreeItemCollapsibleState.None) {
         super(label);
         this.children = children;
+        this.collapsibleState = collapsibleState
     }
 }
 
