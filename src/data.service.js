@@ -22,12 +22,12 @@ class MyViewProvider {
             return Promise.resolve(this.getRootElements());
         }
     }
-    
+
     async getRootElements() {
-        const { timings, message } = await this.getPraryerTimings()
-        if(!message) {
-            const { timings: prayerInfo } = timings
-            await this.context.globalState.update('todayPraryerTimings', JSON.stringify(timings.timings));
+        await this.getPraryerTimings()
+        const todayTimimg = this.getTodaysTiming()
+        if (todayTimimg) {
+            const { timings: prayerInfo } = todayTimimg
             return [
                 new MyTreeItem(`🕑 Fajr [${prayerInfo['Fajr']}]`, []),
                 new MyTreeItem(`🕑 Dhuhr [${prayerInfo['Dhuhr']}]`, []),
@@ -36,7 +36,6 @@ class MyViewProvider {
                 new MyTreeItem(`🕑 Isha [${prayerInfo['Isha']}]`, [])
             ]
         }
-        
     }
 
     async refresh() {
@@ -91,6 +90,8 @@ class MyViewProvider {
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
+        const formattedDate = moment().format('DD MMM YYYY');
+        let shouldFetchData = false
 
         let latitude = this.context.globalState.get('lattitudePraryerTimings', null); //10.784703
         if (!latitude) {
@@ -99,6 +100,7 @@ class MyViewProvider {
             })
             if (latitude) {
                 await this.context.globalState.update('lattitudePraryerTimings', latitude);
+                shouldFetchData = true
             }
         }
 
@@ -110,18 +112,48 @@ class MyViewProvider {
             })
             if (longitude) {
                 await this.context.globalState.update('longitudePraryerTimings', longitude);
+                shouldFetchData = true
             }
         }
 
+
+        if (shouldFetchData === false && !this.doWeHaveTodaysTimings()) {
+            shouldFetchData = true
+        }
+
+
+        if (shouldFetchData === true) {
+            await this.fetchPrayerTimings(year, month, latitude, longitude)
+        }
+    }
+
+    doWeHaveTodaysTimings() {
+        const todaysTimimg = this.getTodaysTiming()
+        if (todaysTimimg) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    getTodaysTiming() {
         const formattedDate = moment().format('DD MMM YYYY');
+        const thisMonthTimimg = JSON.parse(this.context.globalState.get('monthPraryerTimings', []))
+        if (thisMonthTimimg) {
+            return thisMonthTimimg?.filter(item => item?.date?.readable === formattedDate)?.[0]
+        }
+        return null
+    }
+
+    async fetchPrayerTimings(year, month, latitude, longitude) {
         const url = `http://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${latitude}&longitude=${longitude}&method=4`
 
         try {
             const { data } = await axios.get(url);
-            const timings = data?.data?.filter(item => item.date.readable == formattedDate)[0]
-            return { timings }
+            const monthPrayerTimings = data?.data
+            await this.context.globalState.update('monthPraryerTimings', JSON.stringify(monthPrayerTimings));
         } catch (error) {
-            return { timings: [], message: error.message }
+            console.log(error.message);
         }
     }
 }

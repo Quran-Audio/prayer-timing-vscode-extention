@@ -12,13 +12,11 @@ function activate(context) {
 	let refreshCommand = vscode.commands.registerCommand('prayer-timings.refresh', async () => {
 		myViewProvider.refresh();
 	});
-
 	context.subscriptions.push(refreshCommand);
 
 	let settingsCommand = vscode.commands.registerCommand('prayer-timings.settings', async () => {
 		myViewProvider.settings();
 	});
-
 	context.subscriptions.push(settingsCommand);
 
 	let settingsItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
@@ -33,14 +31,14 @@ function activate(context) {
 	nextPrayerItem.tooltip = 'Upcoming Salah';
 	nextPrayerItem.show();
 	context.subscriptions.push(nextPrayerItem);
-	updateNextPrayer(context, myViewProvider)
+	updateNextPrayer(context, myViewProvider,nextPrayerItem)
 
 
-	fetchData(context,myViewProvider)
+	fetchData(context, myViewProvider)
 }
 
 function updateNextPrayer(context, myViewProvider, nextPrayerItem) {
-	const updateInterval = 1000 * 60;
+	const updateInterval = 1000 * 60; //Every Second
 	const updateStatusBar = async () => {
 		nextPrayerItem.text = await myViewProvider.getNextPrayerAlert();
 	};
