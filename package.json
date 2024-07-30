@@ -29,8 +29,8 @@
         "title": "Settings"
       },
       {
-        "command": "prayer-timings.autoUpdate",
-        "title": "Refresh"
+        "command": "prayer-timings.openSettings",
+        "title": "Open Settings"
       }
     ],
     "viewsContainers": {
@@ -49,6 +49,21 @@
           "name": ""
         }
       ]
+    },
+    "configuration": {
+      "title": "Prayer Timings",
+      "properties": {
+        "prayer-timings.latitude": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Location latitude"
+        },
+        "prayer-timings.longitude": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Location Longitude"
+        }
+      }
     }
   },
   "scripts": {

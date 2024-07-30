@@ -19,8 +19,13 @@ function activate(context) {
 	});
 	context.subscriptions.push(settingsCommand);
 
+	let disposable = vscode.commands.registerCommand('prayer-timings.openSettings', () => {
+		vscode.commands.executeCommand('workbench.action.openSettings', 'prayer-timings');
+	});
+	context.subscriptions.push(disposable);
+
 	let settingsItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-	settingsItem.command = 'prayer-timings.settings';
+	settingsItem.command = 'prayer-timings.openSettings';
 	settingsItem.text = '$(gear) Settings';
 	settingsItem.tooltip = 'Open Extension Settings';
 	settingsItem.show();
@@ -31,14 +36,14 @@ function activate(context) {
 	nextPrayerItem.tooltip = 'Upcoming Salah';
 	nextPrayerItem.show();
 	context.subscriptions.push(nextPrayerItem);
-	updateNextPrayer(context, myViewProvider,nextPrayerItem)
+	updateNextPrayer(context, myViewProvider, nextPrayerItem)
 
 
 	fetchData(context, myViewProvider)
 }
 
 function updateNextPrayer(context, myViewProvider, nextPrayerItem) {
-	const updateInterval = 1000 * 60; //Every Second
+	const updateInterval = 1000; //Every Second
 	const updateStatusBar = async () => {
 		nextPrayerItem.text = await myViewProvider.getNextPrayerAlert();
 	};

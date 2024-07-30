@@ -1,6 +1,8 @@
 const vscode = require('vscode');
 const axios = require('axios')
 const moment = require('moment');
+const {getConfigValue,setConfigValue} = require('./config.service')
+const {scheduleAlertAt} = require('./alert.service')
 
 class MyViewProvider {
     constructor(context) {
@@ -28,6 +30,12 @@ class MyViewProvider {
         const todayTimimg = this.getTodaysTiming()
         if (todayTimimg) {
             const { timings: prayerInfo } = todayTimimg
+            scheduleAlertAt('Fajr',prayerInfo['Fajr'])
+            scheduleAlertAt('Dhuhr','8:33 ')
+            scheduleAlertAt('Asr',prayerInfo['Asr'])
+            scheduleAlertAt('Maghrib',prayerInfo['Maghrib'])
+            scheduleAlertAt('Isha',prayerInfo['Isha'])
+
             return [
                 new MyTreeItem(`🕑 Fajr [${prayerInfo['Fajr']}]`, []),
                 new MyTreeItem(`🕑 Dhuhr [${prayerInfo['Dhuhr']}]`, []),
@@ -93,29 +101,28 @@ class MyViewProvider {
         const formattedDate = moment().format('DD MMM YYYY');
         let shouldFetchData = false
 
-        let latitude = this.context.globalState.get('lattitudePraryerTimings', null); //10.784703
+        let latitude = getConfigValue('latitude')
         if (!latitude) {
             latitude = await vscode.window.showInputBox({
                 placeHolder: 'Enter Latitude'
             })
             if (latitude) {
-                await this.context.globalState.update('lattitudePraryerTimings', latitude);
+                setConfigValue('latitude',latitude)
                 shouldFetchData = true
             }
         }
 
 
-        let longitude = this.context.globalState.get('longitudePraryerTimings', null); //76.653145
+        let longitude = getConfigValue('longitude')
         if (!longitude) {
             longitude = await vscode.window.showInputBox({
                 placeHolder: 'Enter Longitude'
             })
             if (longitude) {
-                await this.context.globalState.update('longitudePraryerTimings', longitude);
+                setConfigValue('longitude',longitude)
                 shouldFetchData = true
             }
         }
-
 
         if (shouldFetchData === false && !this.doWeHaveTodaysTimings()) {
             shouldFetchData = true
