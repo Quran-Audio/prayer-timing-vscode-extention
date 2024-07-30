@@ -1,9 +1,9 @@
 {
   "name": "prayers-timings",
-  "displayName": "Prayers Timings",
+  "displayName": "Prayer Timing",
   "description": "Prayer Timing Alerts",
   "publisher": "MohammedShafeer",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.91.0"
   },
