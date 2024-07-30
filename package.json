@@ -4,7 +4,7 @@
   "description": "Prayer Timing Alerts",
   "publisher": "MohammedShafeer",
   "icon": "images/masjid-icon.png",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "engines": {
     "vscode": "^1.91.0"
   },
