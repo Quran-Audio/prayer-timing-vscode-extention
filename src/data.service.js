@@ -32,7 +32,7 @@ class MyViewProvider {
             if (todayTimimg) {
                 const { timings: prayerInfo, meta } = todayTimimg
                 scheduleAlertAt('Fajr', prayerInfo['Fajr'])
-                scheduleAlertAt('Dhuhr', '8:33 ')
+                scheduleAlertAt('Dhuhr', prayerInfo['Dhuhr'])
                 scheduleAlertAt('Asr', prayerInfo['Asr'])
                 scheduleAlertAt('Maghrib', prayerInfo['Maghrib'])
                 scheduleAlertAt('Isha', prayerInfo['Isha'])
@@ -67,8 +67,15 @@ class MyViewProvider {
         try {
             const { timings } = this.getTodaysTiming()
             let hourAndMin = []
+            let fardObj = {
+                Fajr: timings['Fajr'],
+                Dhuhr: timings['Dhuhr'],
+                Asr: timings['Asr'],
+                Maghrib: timings['Maghrib'],
+                Isha: timings['Isha'],
+            }
 
-            for (const key in timings) {
+            for (const key in fardObj) {
                 hourAndMin = timings[key].split(' ')
                 if (this.inNowGreaterThan(hourAndMin?.[0]) === false) {
                     return `[Next:  ${key} ${timings[key]}]`
